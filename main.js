@@ -95,6 +95,7 @@ function JobQueue(name, options) {
                 // or another consumer can try again.
 
                 console.log(err);
+                console.log(err.stack);
                 process.exit(1);
             });
     }
@@ -147,8 +148,13 @@ function JobQueue(name, options) {
                     }
                 }
             })
+            .then(function(res) {
+                console.log(res);
+                return res;
+            })
             .then(responseBus.publish)
             .then(function () {
+                console.log("ack");
                 return requestBus.acknowledge(request);
             });
     }
