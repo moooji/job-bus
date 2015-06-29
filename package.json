@@ -1,0 +1,35 @@
+{
+  "name": "job-bus",
+  "version": "0.10.1",
+  "description": "Job bus",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node --harmony main.js"
+  },
+  "engines": {
+    "node": ">=0.12.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/moooji/job-bus.git"
+  },
+  "keywords": [
+    "job queue",
+    "queue",
+    "jobs",
+    "worker",
+    "service bus"
+  ],
+  "author": "Steffen Strätz",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/moooji/job-bus/issues"
+  },
+  "dependencies": {
+    "bluebird": "^2.9.30",
+    "custom-error-generator": "^7.0.0",
+    "lodash": "^3.9.3",
+    "service-bus": "^0.10.82"
+  }
+}
