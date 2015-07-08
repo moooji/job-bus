@@ -149,12 +149,10 @@ function JobQueue(name, options) {
                 }
             })
             .then(function(res) {
-                console.log(res);
                 return res;
             })
             .then(responseBus.publish)
             .then(function () {
-                console.log("ack");
                 return requestBus.acknowledge(request);
             });
     }
