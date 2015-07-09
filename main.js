@@ -37,11 +37,11 @@ function JobQueue(name, options) {
      */
     function registerWorker(delegate) {
 
-        if(!_.isFunction(delegate)) {
+        if (!_.isFunction(delegate)) {
            throw InvalidArgumentError("Invalid worker delegate (not a function)");
         }
 
-        if(_.isFunction(_workerDelegate)) {
+        if (_.isFunction(_workerDelegate)) {
             throw JobQueueError("Worker has already been registered");
         }
 
@@ -60,11 +60,11 @@ function JobQueue(name, options) {
      */
     function registerFinalizer(delegate) {
 
-        if(!_.isFunction(delegate)) {
+        if (!_.isFunction(delegate)) {
             throw InvalidArgumentError("Invalid finalizer delegate (not a function)");
         }
 
-        if(_.isFunction(_finalizerDelegate)) {
+        if (_.isFunction(_finalizerDelegate)) {
             throw JobQueueError("Finalizer has already been registered");
         }
 
