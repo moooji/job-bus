@@ -148,9 +148,6 @@ function JobQueue(name, options) {
                     }
                 }
             })
-            .then(function(res) {
-                return res;
-            })
             .then(responseBus.publish)
             .then(function () {
                 return requestBus.acknowledge(request);
@@ -174,7 +171,7 @@ function JobQueue(name, options) {
                 // Thus, we will not acknowledge the message so that this
                 // or another consumer can try again.
 
-                console.log(err);
+                console.error(err);
                 process.exit(1);
             });
     }
