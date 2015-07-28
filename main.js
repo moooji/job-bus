@@ -10,7 +10,7 @@ var JobError = createError('JobError');
 var JobQueueError = createError('JobQueueError');
 var InvalidArgumentError = createError('InvalidArgumentError');
 
-/***
+/**
  * Job Queue constructor
  * @param {String} name
  * @param {Object} options
@@ -31,7 +31,7 @@ function JobQueue(name, options) {
     var _finalizerDelegate;
 
 
-    /***
+    /**
      * Registers a worker delegate and starts subscription
      * @param {function} delegate
      */
@@ -54,7 +54,7 @@ function JobQueue(name, options) {
         });
     }
 
-    /***
+    /**
      * Registers a finalizer delegate and starts subscription
      * @param {function} delegate
      */
@@ -77,7 +77,7 @@ function JobQueue(name, options) {
         });
     }
 
-    /***
+    /**
      * Delegate to handle received requests from service bus
      * @param {[Object]} requests
      * @param {function} done
@@ -100,7 +100,7 @@ function JobQueue(name, options) {
             });
     }
 
-    /***
+    /**
      * Processes one message and publishes result on service bus.
      * Returns a promise.
      * @param {Object} request
@@ -154,7 +154,7 @@ function JobQueue(name, options) {
             });
     }
 
-    /***
+    /**
      * Delegate to handle received responses from service bus
      * @param {[Object]} responses
      * @param {function} done
@@ -176,7 +176,7 @@ function JobQueue(name, options) {
             });
     }
 
-    /***
+    /**
      * Processes one response.
      * Returns a promise.
      * @param {Object} response
@@ -193,7 +193,7 @@ function JobQueue(name, options) {
             });
     }
 
-    /***
+    /**
      * Job constructor
      * @param {Object} data
      * @constructor
@@ -212,7 +212,7 @@ function JobQueue(name, options) {
         this.id = md5(dataBuffer);
     }
 
-    /***
+    /**
      * Publishes the job to the job queue
      */
     Job.prototype.publish = function() {
@@ -231,7 +231,7 @@ function JobQueue(name, options) {
         this.isPublished = true;
     };
 
-    /***
+    /**
      * Creates an MD5 hex hash
      * @param data
      * @returns {String}
@@ -243,7 +243,7 @@ function JobQueue(name, options) {
         return hash.digest('hex');
     }
 
-    /***
+    /**
      * Validates the job queue options
      * @param name
      * @param options
