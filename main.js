@@ -2,7 +2,7 @@
 
 var crypto = require("crypto");
 var Promise = require("bluebird");
-var ServiceBus = require("service-bus");
+var serviceBus = require("service-bus");
 var createError = require("custom-error-generator");
 var _ = require("lodash");
 
@@ -17,15 +17,15 @@ var InvalidArgumentError = createError('InvalidArgumentError');
  * @returns {{Job: Job, InvalidArgumentError: (Function|*), JobQueueError: (Function|*)}}
  * @constructor
  */
-function JobQueue(name, options) {
+function jobQueue(name, options) {
 
     validate(name, options);
 
     var requestUrl = options.baseQueueUrl + name + "-requests";
-    var requestBus = ServiceBus(requestUrl, options);
+    var requestBus = serviceBus(requestUrl, options);
 
     var responseUrl = options.baseQueueUrl + name + "-responses";
-    var responseBus = ServiceBus(responseUrl, options);
+    var responseBus = serviceBus(responseUrl, options);
 
     var _workerDelegate;
     var _finalizerDelegate;
@@ -193,19 +193,17 @@ function JobQueue(name, options) {
             });
     }
 
+    // TODO: Make this a factory
+    // const job = jobBus.createJob({});
+    // jobBus.publishJob(job);
+
     /**
      * Job constructor
      * @param {Object} data
-     * @constructor
      */
     function Job(data) {
 
-        if (!_.isPlainObject(data)) {
-            throw JobQueueError("Invalid job data");
-        }
-
         this.data = data;
-        this.isPublished = false;
 
         var dataString = JSON.stringify(data);
         var dataBuffer = new Buffer(dataString);
@@ -213,23 +211,36 @@ function JobQueue(name, options) {
     }
 
     /**
-     * Publishes the job to the job queue
+     * Creates a job
+     * @param {Object} data
+     * @constructor
      */
-    Job.prototype.publish = function() {
+    function createJob(data) {
 
-        if (this.isPublished) {
-            throw JobQueueError("Job has already been published");
+        if (!_.isPlainObject(data)) {
+            throw JobQueueError("Invalid job data");
+        }
+
+        return new Job(data);
+    }
+
+    /**
+     * Publishes a Job
+     * @param {Job} job
+     */
+    function publishJob(job) {
+
+        if (!(job instanceof Job)) {
+            throw JobQueueError("Invalid Job");
         }
 
         requestBus.publish({
-           job: {
-               id: this.id,
-               data: this.data
-           }
+            job: {
+                id: job.id,
+                data: job.data
+            }
         });
-
-        this.isPublished = true;
-    };
+    }
 
     /**
      * Creates an MD5 hex hash
@@ -277,6 +288,8 @@ function JobQueue(name, options) {
 
     return {
         Job: Job,
+        createJob: createJob,
+        publishJob: publishJob,
         registerWorker: registerWorker,
         registerFinalizer: registerFinalizer,
         InvalidArgumentError: InvalidArgumentError,
@@ -285,4 +298,4 @@ function JobQueue(name, options) {
     };
 }
 
-module.exports = JobQueue;
+module.exports = jobQueue;
