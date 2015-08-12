@@ -38,11 +38,11 @@ function jobQueue(name, options) {
     function registerWorker(delegate) {
 
         if (!_.isFunction(delegate)) {
-           throw InvalidArgumentError("Invalid worker delegate (not a function)");
+           throw new InvalidArgumentError("Invalid worker delegate (not a function)");
         }
 
         if (_.isFunction(_workerDelegate)) {
-            throw JobQueueError("Worker has already been registered");
+            throw new JobQueueError("Worker has already been registered");
         }
 
         _workerDelegate = Promise.promisify(delegate);
@@ -61,11 +61,11 @@ function jobQueue(name, options) {
     function registerFinalizer(delegate) {
 
         if (!_.isFunction(delegate)) {
-            throw InvalidArgumentError("Invalid finalizer delegate (not a function)");
+            throw new InvalidArgumentError("Invalid finalizer delegate (not a function)");
         }
 
         if (_.isFunction(_finalizerDelegate)) {
-            throw JobQueueError("Finalizer has already been registered");
+            throw new JobQueueError("Finalizer has already been registered");
         }
 
         _finalizerDelegate = Promise.promisify(delegate);
@@ -115,7 +115,7 @@ function jobQueue(name, options) {
             .then(function(res) {
 
                 if (!_.isPlainObject(res)) {
-                    throw JobError("Worker did not return valid result (no object)");
+                    throw new JobError("Worker did not return valid result (no object)");
                 }
 
                 return {
@@ -204,10 +204,7 @@ function jobQueue(name, options) {
     function Job(data) {
 
         this.data = data;
-
-        var dataString = JSON.stringify(data);
-        var dataBuffer = new Buffer(dataString);
-        this.id = md5(dataBuffer);
+        this.id = md5(data);
     }
 
     /**
@@ -218,7 +215,7 @@ function jobQueue(name, options) {
     function createJob(data) {
 
         if (!_.isPlainObject(data)) {
-            throw JobQueueError("Invalid job data");
+            throw new JobQueueError("Invalid job data");
         }
 
         return new Job(data);
@@ -231,7 +228,7 @@ function jobQueue(name, options) {
     function publishJob(job) {
 
         if (!(job instanceof Job)) {
-            throw JobQueueError("Invalid Job");
+            throw new JobQueueError("Invalid Job");
         }
 
         requestBus.publish({
@@ -249,8 +246,15 @@ function jobQueue(name, options) {
      */
     function md5(data) {
 
+        if (!_.isPlainObject(data)) {
+            throw new InvalidArgumentError("Invalid job data");
+        }
+
+        var dataString = JSON.stringify(data);
+        var dataBuffer = new Buffer(dataString);
         var hash = crypto.createHash('md5');
-        hash.update(data);
+
+        hash.update(dataBuffer);
         return hash.digest('hex');
     }
 
@@ -262,27 +266,27 @@ function jobQueue(name, options) {
     function validate(name, options) {
 
         if (!_.isString(name)) {
-            throw InvalidArgumentError("No name provided");
+            throw new InvalidArgumentError("No name provided");
         }
 
         if (!options) {
-            throw InvalidArgumentError("No options provided");
+            throw new InvalidArgumentError("No options provided");
         }
 
         if (!options.accessKeyId) {
-            throw InvalidArgumentError("No AWS 'accessKeyId' provided");
+            throw new InvalidArgumentError("No AWS 'accessKeyId' provided");
         }
 
         if (!options.secretAccessKey) {
-            throw InvalidArgumentError("No AWS 'secretAccessKey' provided");
+            throw new InvalidArgumentError("No AWS 'secretAccessKey' provided");
         }
 
         if (!options.baseQueueUrl) {
-            throw InvalidArgumentError("No AWS 'baseQueueUrl' provided");
+            throw new InvalidArgumentError("No AWS 'baseQueueUrl' provided");
         }
 
         if (!options.region) {
-            throw InvalidArgumentError("No AWS 'region' provided");
+            throw new InvalidArgumentError("No AWS 'region' provided");
         }
     }
 
