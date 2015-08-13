@@ -11,13 +11,13 @@ var JobQueueError = createError('JobQueueError');
 var InvalidArgumentError = createError('InvalidArgumentError');
 
 /**
- * Job Queue constructor
+ * Job Queue factory
  * @param {String} name
  * @param {Object} options
  * @returns {{Job: Job, InvalidArgumentError: (Function|*), JobQueueError: (Function|*)}}
  * @constructor
  */
-function jobQueue(name, options) {
+function jobQueueFactory(name, options) {
 
     validate(name, options);
 
@@ -302,4 +302,4 @@ function jobQueue(name, options) {
     };
 }
 
-module.exports = jobQueue;
+module.exports = jobQueueFactory;
