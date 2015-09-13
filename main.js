@@ -2,43 +2,44 @@
 
 const Dispatcher = require('./lib/dispatcher');
 const Consumer = require('./lib/consumer');
-const Worker = require('./lib/worker');
+const Producer = require('./lib/producer');
 
 /**
- * Creates a qorker
- * @param {string} requestsUrl
- * @param {string} responsesUrl
+ * Creates a producer
+ * @param {string} requestQueueUrl
+ * @param {string} responseQueueUrl
  * @param {string} region
  * @param {function} delegate
- * @returns {Worker}
+ * @returns {Producer}
  */
 
-function createWorker(requestsUrl, responsesUrl, region, delegate) {
-  return new Worker(requestsUrl, responsesUrl, region, delegate);
+function createProducer(requestQueueUrl, responseQueueUrl, region, delegate) {
+  return new Producer(requestQueueUrl, responseQueueUrl, region, delegate);
 }
 
 /**
  * Creates a consumer
- * @param {string} responsesUrl
+ * @param {string} responseQueueUrl
  * @param {string} region
+ * @param {function} delegate
  * @returns {Consumer}
  */
 
-function createConsumer(responsesUrl, region) {
-  return new Consumer(responsesUrl, region);
+function createConsumer(responseQueueUrl, region, delegate) {
+  return new Consumer(responseQueueUrl, region, delegate);
 }
 
 /**
  * Creates a dispatcher
- * @param {string} requestsUrl
+ * @param {string} requestQueueUrl
  * @param {string} region
  * @returns {Dispatcher}
  */
 
-function createDispatcher(requestsUrl, region) {
-  return new Dispatcher(requestsUrl, region);
+function createDispatcher(requestQueueUrl, region) {
+  return new Dispatcher(requestQueueUrl, region);
 }
 
-module.exports.createWorker = createWorker;
+module.exports.createProducer = createProducer;
 module.exports.createConsumer = createConsumer;
 module.exports.createDispatcher = createDispatcher;

@@ -9,8 +9,25 @@ chai.use(chaiAsPromised);
 
 describe('Consumer', () => {
 
-  it('should return InvalidArgumentError if options are null', () => {
-    return expect(() => jobBus.createConsumer)
+  const delegate = () => {};
+
+  it('should throw InvalidArgumentError if requestQueueUrl is not a valid string', () => {
+    return expect(() => jobBus.createConsumer(123, 'eu-west-1', delegate))
       .to.throw(jobBus.InvalidArgumentError);
+  });
+
+  it('should throw InvalidArgumentError if region is not a valid string', () => {
+    return expect(() => jobBus.createConsumer('http://www.aws.com', null, delegate))
+      .to.throw(jobBus.InvalidArgumentError);
+  });
+
+  it('should throw InvalidArgumentError if delegate is not valid function', () => {
+    return expect(() => jobBus.createConsumer('http://www.aws.com', 'eu-west-1', null))
+      .to.throw(jobBus.InvalidArgumentError);
+  });
+
+  it('should not throw InvalidArgumentError if arguments are correct', () => {
+    return expect(() => jobBus.createConsumer('http://www.aws.com', 'eu-west-1', delegate))
+      .to.not.throw(jobBus.InvalidArgumentError);
   });
 });

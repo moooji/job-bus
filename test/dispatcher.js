@@ -9,7 +9,7 @@ chai.use(chaiAsPromised);
 
 describe('Dispatcher', () => {
 
-  it('should throw InvalidArgumentError if requestsUrl is not a valid string', () => {
+  it('should throw InvalidArgumentError if requestUrl is not a valid string', () => {
     return expect(() => jobBus.createDispatcher(123, 'eu-west-1'))
       .to.throw(jobBus.InvalidArgumentError);
   });
@@ -37,7 +37,7 @@ describe('Dispatcher - Create and publish job', () => {
     expect(() => dispatcher.createJob(null))
       .to.throw(jobBus.InvalidArgumentError);
 
-    expect(() => dispatcher.createJob("abc"))
+    expect(() => dispatcher.createJob('abc'))
       .to.throw(jobBus.InvalidArgumentError);
 
     expect(() => dispatcher.createJob({a: 123}))
