@@ -1,6 +1,6 @@
 {
   "name": "job-bus",
-  "version": "0.10.17",
+  "version": "0.10.20",
   "description": "Job bus - UNDER HEAVY DEVELOPMENT. API expected to be stable and documented with 0.11 release.",
   "main": "main.js",
   "scripts": {
@@ -19,7 +19,9 @@
     "queue",
     "jobs",
     "worker",
-    "service bus"
+    "service bus",
+    "SQS",
+    "AWS"
   ],
   "author": "Steffen Strätz",
   "license": "MIT",
@@ -30,7 +32,6 @@
     "bluebird": "^2.9.30",
     "custom-error-generator": "^7.0.0",
     "lodash": "^3.9.3",
-    "service-bus": "^0.10.87",
     "sqs-consumer": "bbc/sqs-consumer",
     "sqs-producer": "bbc/sqs-producer"
   },
