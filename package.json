@@ -1,6 +1,6 @@
 {
   "name": "job-bus",
-  "version": "0.10.27",
+  "version": "0.10.28",
   "description": "Job bus - UNDER HEAVY DEVELOPMENT. API expected to be stable and documented with 0.11 release.",
   "main": "main.js",
   "scripts": {
