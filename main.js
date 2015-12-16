@@ -6,6 +6,7 @@ const Producer = require('./lib/producer');
 
 /**
  * Creates a producer
+ *
  * @param {string} requestQueueUrl
  * @param {string} responseQueueUrl
  * @param {string} region
@@ -19,6 +20,7 @@ function createProducer(requestQueueUrl, responseQueueUrl, region, delegate) {
 
 /**
  * Creates a consumer
+ *
  * @param {string} responseQueueUrl
  * @param {string} region
  * @param {function} delegate
@@ -31,6 +33,7 @@ function createConsumer(responseQueueUrl, region, delegate) {
 
 /**
  * Creates a dispatcher
+ *
  * @param {string} requestQueueUrl
  * @param {string} region
  * @returns {Dispatcher}
