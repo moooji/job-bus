@@ -44,6 +44,18 @@ describe('Dispatcher - Create and publish job', () => {
       .to.not.throw(jobBus.InvalidArgumentError);
   });
 
+  it('should throw InvalidArgumentError when creating Job with invalid id', () => {
+
+    expect(() => dispatcher.createJob({a: 123}))
+      .to.not.throw(jobBus.InvalidArgumentError);
+
+    expect(() => dispatcher.createJob({a: 123}, 'abc'))
+      .to.not.throw(jobBus.InvalidArgumentError);
+
+    expect(() => dispatcher.createJob({a: 123}, 123))
+      .to.throw(jobBus.InvalidArgumentError);
+  });
+
   it('should throw InvalidArgumentError when publishing invalid Job', () => {
 
     const job = dispatcher.createJob({a: 123});
