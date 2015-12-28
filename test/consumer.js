@@ -123,8 +123,8 @@ describe('Consumer - Process jobs', () => {
 
   it('should not delete a message if delegate returned error and emit delegate-error', (done) => {
 
-    const delegateError = new Error('oh noes');
-    delegate = sinon.stub().yieldsAsync(delegateError, null);
+    const error = new Error('oh noes');
+    delegate = sinon.stub().yieldsAsync(error, null);
 
     consumer = jobBus.createConsumer(inputQueueUrl, delegate, {
       sqs,
@@ -155,7 +155,7 @@ describe('Consumer - Process jobs', () => {
         sinon.assert.calledOnce(delegate);
         sinon.assert.calledWith(delegate, job);
         sinon.assert.notCalled(sqs.deleteMessage);
-        expect(emittedError).to.equal(delegateError);
+        expect(emittedError).to.deep.equal(error);
         done();
       } catch (err) {
         done(err);
@@ -195,7 +195,7 @@ describe('Consumer - Process jobs', () => {
         });
         sinon.assert.notCalled(delegate);
         sinon.assert.notCalled(sqs.deleteMessage);
-        expect(err).to.equal(sqsError);
+        expect(err.message).to.equal(sqsError.message);
         done();
       } catch (err) {
         done(err);

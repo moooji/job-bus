@@ -101,8 +101,8 @@ describe('Producer - Process jobs', () => {
 
   it('should receive, process and delete a message, then publish success result', (done) => {
 
-    const jobResult = {processed: true};
-    delegate = sinon.stub().yieldsAsync(null, jobResult);
+    const delegateResult = {processed: true};
+    delegate = sinon.stub().yieldsAsync(null, delegateResult);
 
     producer = jobBus.createProducer(inputQueueUrl, outputQueueUrl, delegate, {
       sqs,
@@ -113,14 +113,9 @@ describe('Producer - Process jobs', () => {
       region: 'some-region'
     });
 
-    let success = null;
-    producer.on('job-success', (data) => {
-      success = data;
-    });
-
-    let error = null;
-    producer.on('job-error', (data) => {
-      error = data;
+    let jobResult = null;
+    producer.on('job-result', (data) => {
+      jobResult = data;
     });
 
     producer.on('processed-message', () => {
@@ -140,7 +135,7 @@ describe('Producer - Process jobs', () => {
         sinon.assert.calledOnce(sqs.sendMessage);
         sinon.assert.calledWith(sqs.sendMessage, {
           QueueUrl: outputQueueUrl,
-          MessageBody: JSON.stringify(success)
+          MessageBody: JSON.stringify(jobResult)
         });
         sinon.assert.calledOnce(sqs.deleteMessage);
         sinon.assert.calledWith(sqs.deleteMessage, {
@@ -148,11 +143,10 @@ describe('Producer - Process jobs', () => {
           QueueUrl: inputQueueUrl
         });
 
-        expect(success.job.id).to.deep.equal(id);
-        expect(success.job.revision).to.be.most(new Date().getTime());
-        expect(success.job.success).to.deep.equal(jobResult);
-        expect(success.job.error).to.deep.equal(undefined);
-        expect(error).to.equal(null);
+        expect(jobResult.job.id).to.deep.equal(id);
+        expect(jobResult.job.revision).to.be.most(new Date().getTime());
+        expect(jobResult.job.success).to.deep.equal(delegateResult);
+        expect(jobResult.job.error).to.deep.equal(undefined);
         done();
       } catch (err) {
         done(err);
@@ -164,7 +158,8 @@ describe('Producer - Process jobs', () => {
 
   it('should receive, process, not delete message on error and not publish result', (done) => {
 
-    delegate = sinon.stub().yieldsAsync(new Error('oh noes'), null);
+    const delegateError = new Error('oh noes');
+    delegate = sinon.stub().yieldsAsync(delegateError, null);
 
     producer = jobBus.createProducer(inputQueueUrl, outputQueueUrl, delegate, {
       sqs,
@@ -175,14 +170,9 @@ describe('Producer - Process jobs', () => {
       region: 'some-region'
     });
 
-    let success = null;
-    producer.on('job-success', (data) => {
-      success = data;
-    });
-
-    let error = null;
-    producer.on('job-error', (data) => {
-      error = data;
+    let jobResult = null;
+    producer.on('job-result', (data) => {
+      jobResult = data;
     });
 
     producer.on('processed-message', () => {
@@ -201,9 +191,7 @@ describe('Producer - Process jobs', () => {
         sinon.assert.calledWith(delegate, job);
         sinon.assert.notCalled(sqs.sendMessage);
         sinon.assert.notCalled(sqs.deleteMessage);
-
-        expect(success).to.equal(null);
-        expect(error).to.equal(null);
+        expect(jobResult).to.equal(null);
         done();
       } catch (err) {
         done(err);
@@ -227,14 +215,9 @@ describe('Producer - Process jobs', () => {
       region: 'some-region'
     });
 
-    let success = null;
-    producer.on('job-success', (data) => {
-      success = data;
-    });
-
-    let error = null;
-    producer.on('job-error', (data) => {
-      error = data;
+    let jobResult = null;
+    producer.on('job-result', (data) => {
+      jobResult = data;
     });
 
     producer.on('processed-message', () => {
@@ -254,7 +237,7 @@ describe('Producer - Process jobs', () => {
         sinon.assert.calledOnce(sqs.sendMessage);
         sinon.assert.calledWith(sqs.sendMessage, {
           QueueUrl: outputQueueUrl,
-          MessageBody: JSON.stringify(error)
+          MessageBody: JSON.stringify(jobResult)
         });
         sinon.assert.calledOnce(sqs.deleteMessage);
         sinon.assert.calledWith(sqs.deleteMessage, {
@@ -262,15 +245,14 @@ describe('Producer - Process jobs', () => {
           QueueUrl: inputQueueUrl
         });
 
-        expect(error.job.id).to.deep.equal(id);
-        expect(error.job.revision).to.be.most(new Date().getTime());
-        expect(error.job.success).to.deep.equal(undefined);
-        expect(error.job.error).to.deep.equal({
+        expect(jobResult.job.id).to.deep.equal(id);
+        expect(jobResult.job.revision).to.be.most(new Date().getTime());
+        expect(jobResult.job.success).to.deep.equal(undefined);
+        expect(jobResult.job.error).to.deep.equal({
           message: 'Job failed',
           reason: delegateError.message,
           stack: delegateError.stack
         });
-        expect(success).to.equal(null);
         done();
       } catch (err) {
         done(err);
