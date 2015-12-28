@@ -6,7 +6,6 @@ const sinon = require('sinon');
 
 const jobBus = require('../main');
 const Dispatcher = require('../lib/dispatcher');
-const helpers = require('../lib/helpers');
 
 const expect = chai.expect;
 chai.use(chaiAsPromised);
@@ -54,37 +53,20 @@ describe('Dispatcher - Publish job', () => {
   });
 
   it('should throw InvalidArgumentError when publishing job with invalid id', () => {
-    return expect(dispatcher.publishJob({a: 123}, 123))
+    return expect(dispatcher.publishJob(123, {a: 123}))
       .to.be.rejectedWith(jobBus.InvalidArgumentError);
   });
 
   it('should publish a job', () => {
     const data = {a: 123};
-    const id = helpers.getHash(data);
+    const id = 'job-1';
 
     const expectedMessage = {
       MessageBody: JSON.stringify({job: {id, data}}),
       QueueUrl: outputQueueUrl
     };
 
-    return expect(dispatcher.publishJob(data))
-      .to.eventually.be.fulfilled
-      .then(() => {
-        sinon.assert.calledOnce(sqs.sendMessage);
-        sinon.assert.calledWith(sqs.sendMessage, expectedMessage);
-      });
-  });
-
-  it('should publish a job with optional id', () => {
-    const data = {a: 123};
-    const id = 'job-123';
-
-    const expectedMessage = {
-      MessageBody: JSON.stringify({job: {id, data}}),
-      QueueUrl: outputQueueUrl
-    };
-
-    return expect(dispatcher.publishJob(data, id))
+    return expect(dispatcher.publishJob(id, data))
       .to.eventually.be.fulfilled
       .then(() => {
         sinon.assert.calledOnce(sqs.sendMessage);
@@ -114,7 +96,7 @@ describe('Dispatcher - Publish job error', () => {
   it('should throw SqsError when sendMessage returns error', () => {
     const data = {a: 123};
 
-    return expect(dispatcher.publishJob(data))
+    return expect(dispatcher.publishJob('job-1', data))
       .to.be.rejectedWith(jobBus.SqsError)
       .then(() => {
         sinon.assert.calledOnce(sqs.sendMessage);

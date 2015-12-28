@@ -19,7 +19,7 @@ const JobError = jobBus.JobError;
 for (let i = 0; i < 10; i++) {
   const id = `job-${i}`;
   const data = {downloadUrl: 'http://www.cow-images.com'};
-  dispatcher.publishJob(data, id);
+  dispatcher.publishJob(id, data);
 }
 
 producer.on('debug', (data) => console.log(data));

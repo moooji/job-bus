@@ -1,6 +1,6 @@
 {
   "name": "job-bus",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Job bus using AWS SQS",
   "main": "main.js",
   "scripts": {
@@ -31,8 +31,7 @@
   "dependencies": {
     "aws-sdk": "^2.2.26",
     "custom-error-generator": "^7.0.0",
-    "lodash": "^3.10.1",
-    "object-hash": "^1.0.0"
+    "lodash": "^3.10.1"
   },
   "devDependencies": {
     "chai": "^3.2.0",

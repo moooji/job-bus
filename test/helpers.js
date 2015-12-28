@@ -17,14 +17,6 @@ const sqsOptions = {
   secretAccessKey: 'def'
 };
 
-describe('Helpers - getHash', () => {
-
-  it('should return a hash for an object', () => {
-    return expect(helpers.getHash({a: 123, b: 567}))
-      .to.equal('a3c7e7e03a284ba3ab4e913666527b8b3117ebf8');
-  });
-});
-
 describe('Helpers - createSqs', () => {
 
   it('should return a new SQS instance', () => {
