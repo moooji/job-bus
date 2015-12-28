@@ -1,54 +1,49 @@
 'use strict';
 
-const Bluebird = require('bluebird');
 const jobBus = require('../main');
 
 const requestQueueUrl = process.env.JOB_BUS_REQUESTS_SQS_URL;
 const responseQueueUrl = process.env.JOB_BUS_RESPONSES_SQS_URL;
 const region = process.env.JOB_BUS_SQS_REGION;
+const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
+const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
 
-const dispatcher = jobBus.createDispatcher(requestQueueUrl, region);
-const producer = jobBus.createProducer(requestQueueUrl, responseQueueUrl, region, onRequest);
-const consumer = jobBus.createConsumer(responseQueueUrl, region, onResponse);
+const options = {region, accessKeyId, secretAccessKey};
 
-const job = dispatcher.createJob({cow: 'mooo'});
+const dispatcher = jobBus.createDispatcher(requestQueueUrl, options);
+const consumer = jobBus.createConsumer(responseQueueUrl, onResponse, options);
+const producer = jobBus.createProducer(requestQueueUrl, responseQueueUrl, onRequest, options);
 
-dispatcher.publishJob(job);
-dispatcher.publishJob(job);
+const JobError = jobBus.JobError;
 
-producer.on('error', (err) => {
-  console.log('Producer error');
-  console.error(err);
-});
-
-consumer.on('error', (err) => {
-  console.log('Consumer error');
-  console.error(err);
-});
-
-function onRequest(request, callback) {
-
-  return Bluebird.resolve(request)
-    .then((request) => {
-
-      //throw new producer.JobError('oh noes');
-      //throw new Error('Super error');
-
-      console.log(request);
-      return {bazinga: true};
-    })
-    .nodeify(callback);
+for (let i = 0; i < 10; i++) {
+  const id = `job-${i}`;
+  const data = {downloadUrl: 'http://www.cow-images.com'};
+  dispatcher.publishJob(data, id);
 }
 
-function onResponse(response, callback) {
+producer.on('debug', (data) => console.log(data));
+producer.on('info', (data) => console.log(data));
+producer.on('warn', (data) => console.log(data));
+//producer.on('error', (err) => console.log(err));
 
-  return Bluebird.resolve(response)
-    .then((response) => {
+consumer.on('debug', (data) => console.log(data));
+consumer.on('info', (data) => console.log(data));
+consumer.on('warn', (data) => console.log(data));
+//consumer.on('error', (err) => console.log(err));
 
-      //throw new worker.JobError('oh noes');
-      //throw new Error('Super error');
+consumer.start();
+producer.start();
 
-      console.log(response);
-    })
-    .nodeify(callback);
+function onRequest(job, callback) {
+  console.log(job);
+
+  // Generate random job error
+  const err = Math.random() < 0.5 ? new JobError('Server offline') : null;
+  return callback(err, {imageSize: 300000});
+}
+
+function onResponse(job, callback) {
+  console.log(job);
+  return callback(null, null);
 }
