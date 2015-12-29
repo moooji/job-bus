@@ -1,6 +1,6 @@
 {
   "name": "job-bus",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Job bus using AWS SQS",
   "main": "main.js",
   "scripts": {
